@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MaterialInput } from "@/components/ui/MaterialInput";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 
 export function LoginForm({
@@ -10,7 +11,6 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const [isClicked, setIsClicked] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
 
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>
@@ -29,13 +29,31 @@ export function LoginForm({
         {isClicked ? (
           <>
             <div className="grid gap-3 relative">
-              <MaterialInput
-                id="otp"
-                label="OTP"
-                required
-                showToggle={true}
-              />
+              <MaterialInput id="otp" label="OTP" required showToggle={true} />
+
+              {/* Resend OTP link */}
+              <button
+                type="button"
+                className="text-sm text-blue-600 font-medium underline text-left"
+                onClick={() => {
+                  console.log("Resend OTP clicked");
+                }}
+              >
+                Resend OTP
+              </button>
+
+              {/* Keep me logged in checkbox with shadcn */}
+              <div className="flex items-center gap-2">
+                <Checkbox id="keepLoggedIn" />
+                <label
+                  htmlFor="keepLoggedIn"
+                  className="text-sm text-gray-600 cursor-pointer"
+                >
+                  Keep me logged in
+                </label>
+              </div>
             </div>
+
             <Button
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-600 text-white h-12 text-lg"
@@ -65,9 +83,12 @@ export function LoginForm({
       </div>
 
       <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <a href="/register" className="underline underline-offset-4 text-blue-600 font-semibold">
-          Sign up
+        Need an account?{" "}
+        <a
+          href="/register"
+          className="underline underline-offset-4 text-blue-600 font-semibold"
+        >
+          Create one
         </a>
       </div>
     </form>
