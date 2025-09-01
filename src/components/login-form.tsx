@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MaterialInput } from "@/components/ui/MaterialInput";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { signIn, getSession } from "next-auth/react";
 
 export function LoginForm({
@@ -29,10 +29,10 @@ export function LoginForm({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
-      toast.success("OTP sent!", { description: "Check your email" });
+      toast.success("OTP sent!", { style: { background: "#16a34a", color: "#fff" } });
       setIsClicked(true);
     } catch (err: any) {
-      toast.error("Error sending OTP", { description: err.message });
+      toast.error("Error sending OTP", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
     }
@@ -57,12 +57,10 @@ export function LoginForm({
       if (!res.ok) throw new Error(data.error || "Login failed");
 
       localStorage.setItem("token", data.token);
-      toast.success("Login successful!", {
-        description: "Redirecting to home...",
-      });
+      toast.success("Login successful!", { style: { background: "#16a34a", color: "#fff" } });
       setTimeout(() => (window.location.href = "/home"), 1000);
     } catch (err: any) {
-      toast.error("Login failed", { description: err.message });
+      toast.error("Login failed", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
     }
@@ -80,8 +78,10 @@ export function LoginForm({
       localStorage.setItem("token", session.customToken);
       console.log("Google login successful, token stored.", session.customToken);
       window.location.href = "/home";
+      toast.success("Login successful!", { style: { background: "#16a34a", color: "#fff" } });
     } catch (err: any) {
       console.error(err);
+      toast.error("Login failed", { style: { background: "#dc2626", color: "#fff" } });
     }
   };
 
@@ -110,7 +110,7 @@ export function LoginForm({
 
         {isClicked && (
           <>
-            <div className="grid gap-3 relative">
+            <div className="flex flex-col gap-2 items-start relative">
               <MaterialInput
                 id="otp"
                 label="OTP"

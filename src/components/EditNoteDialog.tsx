@@ -12,6 +12,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+import toast from "react-hot-toast";
+
 interface Note {
   title: string;
   content: string;
@@ -57,10 +59,12 @@ export function EditNoteDialog({
       });
       if (!res.ok) throw new Error("Failed to update note");
       const data = await res.json();
+      toast.success("Note updated successfully!", { style: { background: "#16a34a", color: "#fff" } });
       onSave(data.note);
       onOpenChange(false);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to update note", { style: { background: "#dc2626", color: "#fff" } });
     }
   };
 

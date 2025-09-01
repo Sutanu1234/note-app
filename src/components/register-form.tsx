@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MaterialInput } from "@/components/ui/MaterialInput";
 import { useState } from "react";
 import { CalendarInput } from "./ui/calender-input";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { signIn, getSession } from "next-auth/react";
 
 export function RegisterForm({
@@ -30,13 +30,9 @@ export function RegisterForm({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
       setIsClicked(true);
-      toast.success("OTP sent successfully!", {
-        description: "Check your email",
-      });
+      toast.success("OTP sent successfully!", { style: { background: "#16a34a", color: "#fff" } });
     } catch (err: any) {
-      toast.error("Error sending OTP", {
-        description: err.message || "Something went wrong",
-      });
+      toast.error("Error sending OTP", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
     }
@@ -62,14 +58,10 @@ export function RegisterForm({
       if (!res.ok) throw new Error(data.error || "Signup failed");
 
       localStorage.setItem("token", data.token);
-      toast.success("Signup successful!", {
-        description: "Redirecting to home...",
-      });
+      toast.success("Signup successful!", { style: { background: "#16a34a", color: "#fff" } });
       setTimeout(() => (window.location.href = "/home"), 1000);
     } catch (err: any) {
-      toast.error("Signup failed", {
-        description: err.message || "Something went wrong",
-      });
+      toast.error("Signup failed", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
     }
@@ -85,8 +77,10 @@ export function RegisterForm({
 
     localStorage.setItem("token", session.customToken);
     window.location.href = "/home";
+    toast.success("Login successful!", { style: { background: "#16a34a", color: "#fff" } });
   } catch (err: any) {
     console.error(err);
+    toast.error("Login failed", { style: { background: "#dc2626", color: "#fff" } });
   }
 };
 

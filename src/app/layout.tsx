@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Toaster } from "@/components/ui/sonner"
+// import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,13 +15,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
+      <body className={`antialiased`}>
         <main>{children}</main>
-        <Toaster />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              borderRadius: "8px",
+              padding: "12px",
+              color: "#fff",
+              fontWeight: "500",
+            },
+          }}
+        />
       </body>
-      <script src="https://accounts.google.com/gsi/client" async defer></script>
+      {/* <script src="https://accounts.google.com/gsi/client" async defer></script> */}
     </html>
   );
 }

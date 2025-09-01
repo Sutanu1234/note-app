@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import toast from "react-hot-toast";
 
 interface CreateNoteDialogProps {
   onCreate: (note: { title: string; content: string }) => void;
@@ -38,12 +39,14 @@ export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
       });
       if (!res.ok) throw new Error("Failed to create note");
       const data = await res.json();
+      toast.success("Note created successfully!", { style: { background: "#16a34a", color: "#fff" } });
       onCreate(data.note); // update state
       setTitle("");
       setContent("");
       setOpen(false);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to create note", { style: { background: "#dc2626", color: "#fff" } });
     }
   };
 

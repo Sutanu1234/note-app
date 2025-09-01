@@ -8,6 +8,8 @@ import { EditNoteDialog } from "@/components/EditNoteDialog";
 import { ViewNoteDialog } from "@/components/ViewNoteDialog";
 import { useRouter } from "next/navigation";
 
+import toast from "react-hot-toast";
+
 interface Note {
   title: string;
   content: string;
@@ -72,12 +74,20 @@ export default function DashboardPage() {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) throw new Error("Failed to delete note");
+
     setNotes(notes.filter((_, i) => i !== index));
     if (selectedNoteIndex === index) setSelectedNoteIndex(null);
+    toast.success("Note deleted successfully!", {
+      style: { background: "#16a34a", color: "#fff" },
+    });
   } catch (err) {
     console.error(err);
+    toast.error("Failed to delete note!", {
+      style: { background: "#dc2626", color: "#fff" },
+    });
   }
 };
+
 
 
   const handleEditSave = (updatedNote: { title: string; content: string }) => {
@@ -91,6 +101,7 @@ export default function DashboardPage() {
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
+    toast.success("Logout Successfully", { style: { background: "#16a34a", color: "#fff" } });
     router.replace("/login");
   };
 
