@@ -42,7 +42,7 @@ export default function DashboardPage() {
     <div className="flex min-h-screen flex-col">
       {/* Navbar */}
       <header className="border-b bg-white">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px- 0">
           <div className="flex items-center gap-2">
             <img src="./icon.svg" />
             <span className="text-lg font-bold">Dashboard</span>

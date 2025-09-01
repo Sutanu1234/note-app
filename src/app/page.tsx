@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const isLogin = false; 
+  const isLogin = true; 
 
   const router = useRouter();
 
   useEffect(() => {
     if (isLogin) {
-      router.replace("/dashboard/home");
+      router.replace("/home");
     } else {
       router.replace("/login");
     }
