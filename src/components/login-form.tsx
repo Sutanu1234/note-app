@@ -112,7 +112,7 @@ export function LoginForm({
               {/* Resend OTP */}
               <button
                 type="button"
-                className="text-sm text-blue-600 font-medium underline text-left"
+                className="text-sm text-blue-600 font-medium underline text-left cursor-pointer"
                 onClick={handleGetOtp}
                 disabled={loading}
               >
@@ -173,7 +173,7 @@ export function LoginForm({
         Need an account?{" "}
         <a
           href="/register"
-          className="underline underline-offset-4 text-blue-600 font-semibold"
+          className="underline underline-offset-4 text-blue-600 font-semibold cursor-pointer"
         >
           Create one
         </a>

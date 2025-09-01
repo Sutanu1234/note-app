@@ -86,7 +86,7 @@ export default function DashboardPage() {
           <nav>
             <button
               onClick={handleSignOut}
-              className="text-sm font-medium underline text-blue-600"
+              className="text-sm font-medium underline text-blue-600 cursor-pointer"
             >
               Sign out
             </button>
