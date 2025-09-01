@@ -57,7 +57,7 @@ export function CalendarInput({
         </PopoverContent>
       </Popover>
 
-      {/* Floating Label */}
+      {/* Floating Label Custom Ui */}
       <label
         className={cn(
           "absolute left-3 top-3 text-gray-500 text-sm transition-all bg-white",

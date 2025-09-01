@@ -4,7 +4,7 @@ import { Eye, EyeOff } from "lucide-react"
 
 interface MaterialInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string
-  showToggle?: boolean // 👈 if true, show eye button
+  showToggle?: boolean
 }
 
 export function MaterialInput({ label, id, className, type = "text", showToggle = false, ...props }: MaterialInputProps) {
