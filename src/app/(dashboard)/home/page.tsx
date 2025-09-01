@@ -30,35 +30,55 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("Retrieved token from localStorage:", token);
     if (!token) {
       router.replace("/login");
       return;
     }
 
-    const fetchUser = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        // fetch user
+        const userRes = await fetch("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error("Unauthorized");
-        const data = await res.json();
-        setUser(data.user);
+        if (!userRes.ok) throw new Error("Unauthorized");
+        const userData = await userRes.json();
+        setUser(userData.user);
+
+        // fetch notes
+        const notesRes = await fetch("/api/notes", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!notesRes.ok) throw new Error("Failed to fetch notes");
+        const notesData = await notesRes.json();
+        setNotes(notesData.notes || []);
       } catch (err) {
-        console.error("fetchUser error:", err);
+        console.error(err);
         localStorage.removeItem("token");
         router.replace("/login");
       }
     };
 
-    fetchUser();
+    fetchData();
   }, [router]);
 
-  const handleDelete = (index: number) => {
+  const handleDelete = async (index: number) => {
+  const note = notes[index];
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`/api/notes/${note._id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Failed to delete note");
     setNotes(notes.filter((_, i) => i !== index));
     if (selectedNoteIndex === index) setSelectedNoteIndex(null);
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   const handleEditSave = (updatedNote: { title: string; content: string }) => {
     if (editIndex === null) return;

@@ -6,6 +6,7 @@ import { MaterialInput } from "@/components/ui/MaterialInput";
 import { useState } from "react";
 import { CalendarInput } from "./ui/calender-input";
 import { toast } from "sonner";
+import { signIn, getSession } from "next-auth/react";
 
 export function RegisterForm({
   className,
@@ -21,20 +22,18 @@ export function RegisterForm({
   const handleGetOtp = async () => {
     setLoading(true);
     try {
-      const res = await fetch("api/auth/request-otp", {
+      const res = await fetch("/api/auth/request-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, purpose: "signup" }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
-
       setIsClicked(true);
       toast.success("OTP sent successfully!", {
-        description: "Check your email for the OTP code.",
+        description: "Check your email",
       });
     } catch (err: any) {
-      console.error("OTP Request Error:", err); // 👈 log error
       toast.error("Error sending OTP", {
         description: err.message || "Something went wrong",
       });
@@ -66,12 +65,8 @@ export function RegisterForm({
       toast.success("Signup successful!", {
         description: "Redirecting to home...",
       });
-
-      setTimeout(() => {
-        window.location.href = "/home";
-      }, 1000);
+      setTimeout(() => (window.location.href = "/home"), 1000);
     } catch (err: any) {
-      console.error("Signup Error:", err); // 👈 log error
       toast.error("Signup failed", {
         description: err.message || "Something went wrong",
       });
@@ -79,6 +74,21 @@ export function RegisterForm({
       setLoading(false);
     }
   };
+
+  const handleGoogleSignIn = async () => {
+  try {
+    const res = await signIn("google", { redirect: false });
+    if (res?.error) throw new Error(res.error);
+
+    const session = await getSession();
+    if (!session?.customToken) throw new Error("No token returned");
+
+    localStorage.setItem("token", session.customToken);
+    window.location.href = "/home";
+  } catch (err: any) {
+    console.error(err);
+  }
+};
 
   return (
     <form
@@ -152,16 +162,15 @@ export function RegisterForm({
             Or continue with
           </span>
         </div>
+
         <Button
           type="button"
           variant="outline"
           className="w-full h-12"
-          onClick={() => {
-            toast.info("Google sign-in not yet implemented");
-          }}
+          onClick={handleGoogleSignIn}
         >
-          <img src="./google.svg" width={28} height={28} alt="Google" />
-          Sign up with Google
+          <img src="./google.svg" width={28} height={28} alt="Google" /> Sign up
+          with Google
         </Button>
       </div>
 

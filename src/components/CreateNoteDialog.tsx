@@ -22,12 +22,29 @@ export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const handleCreate = () => {
+  const token = localStorage.getItem("token");
+
+  const handleCreate = async () => {
     if (!title.trim() || !content.trim()) return;
-    onCreate({ title, content });
-    setTitle("");
-    setContent("");
-    setOpen(false); // close dialog
+
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, content }),
+      });
+      if (!res.ok) throw new Error("Failed to create note");
+      const data = await res.json();
+      onCreate(data.note); // update state
+      setTitle("");
+      setContent("");
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

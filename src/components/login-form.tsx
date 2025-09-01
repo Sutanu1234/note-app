@@ -6,6 +6,7 @@ import { MaterialInput } from "@/components/ui/MaterialInput";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { toast } from "sonner";
+import { signIn, getSession } from "next-auth/react";
 
 export function LoginForm({
   className,
@@ -17,6 +18,7 @@ export function LoginForm({
   const [otp, setOtp] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
+  // Request OTP
   const handleGetOtp = async () => {
     setLoading(true);
     try {
@@ -27,19 +29,16 @@ export function LoginForm({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
-
-      toast.success("OTP sent!", {
-        description: "Check your email for the code",
-      });
+      toast.success("OTP sent!", { description: "Check your email" });
       setIsClicked(true);
     } catch (err: any) {
-      toast.error("Error", { description: err.message });
-      console.error("request-otp error:", err);
+      toast.error("Error sending OTP", { description: err.message });
     } finally {
       setLoading(false);
     }
   };
 
+  // Verify OTP
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -61,15 +60,28 @@ export function LoginForm({
       toast.success("Login successful!", {
         description: "Redirecting to home...",
       });
-
-      setTimeout(() => {
-        window.location.href = "/home";
-      }, 1000);
+      setTimeout(() => (window.location.href = "/home"), 1000);
     } catch (err: any) {
       toast.error("Login failed", { description: err.message });
-      console.error("verify-otp error:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Google login using NextAuth
+  const handleGoogleSignIn = async () => {
+    try {
+      const res = await signIn("google", { redirect: false });
+      if (res?.error) throw new Error(res.error);
+
+      const session = await getSession();
+      if (!session?.customToken) throw new Error("No token returned");
+
+      localStorage.setItem("token", session.customToken);
+      console.log("Google login successful, token stored.", session.customToken);
+      window.location.href = "/home";
+    } catch (err: any) {
+      console.error(err);
     }
   };
 
@@ -87,18 +99,16 @@ export function LoginForm({
       </div>
 
       <div className="grid gap-6">
-        <div className="grid gap-3">
-          <MaterialInput
-            id="email"
-            type="email"
-            label="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+        <MaterialInput
+          id="email"
+          type="email"
+          label="Email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        {isClicked ? (
+        {isClicked && (
           <>
             <div className="grid gap-3 relative">
               <MaterialInput
@@ -109,17 +119,15 @@ export function LoginForm({
                 onChange={(e) => setOtp(e.target.value)}
               />
 
-              {/* Resend OTP */}
               <button
                 type="button"
-                className="text-sm text-blue-600 font-medium underline text-left cursor-pointer"
+                className="text-sm text-blue-600 font-medium underline cursor-pointer"
                 onClick={handleGetOtp}
                 disabled={loading}
               >
                 Resend OTP
               </button>
 
-              {/* Keep me logged in */}
               <div className="flex items-center gap-2">
                 <Checkbox
                   id="keepLoggedIn"
@@ -143,7 +151,9 @@ export function LoginForm({
               {loading ? "Signing in..." : "Signin"}
             </Button>
           </>
-        ) : (
+        )}
+
+        {!isClicked && (
           <Button
             type="button"
             disabled={loading}
@@ -159,12 +169,14 @@ export function LoginForm({
             Or continue with
           </span>
         </div>
+
         <Button
+          type="button"
           variant="outline"
-          className="w-full h-12"
-          onClick={() => toast.info("Google signin not yet implemented")}
+          className="w-full h-12 flex items-center justify-center gap-2"
+          onClick={handleGoogleSignIn}
         >
-          <img src="./google.svg" width={28} height={28} />
+          <img src="./google.svg" width={28} height={28} alt="Google" />
           Signin with Google
         </Button>
       </div>

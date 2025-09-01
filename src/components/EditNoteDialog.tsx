@@ -34,17 +34,34 @@ export function EditNoteDialog({
   const [content, setContent] = useState("");
 
   useEffect(() => {
-  if (initialNote) {
-    setTitle(initialNote.title || "");
-    setContent(initialNote.content || "");
-  }
-}, [initialNote]);
+    if (initialNote) {
+      setTitle(initialNote.title || "");
+      setContent(initialNote.content || "");
+    }
+  }, [initialNote]);
 
+  const token = localStorage.getItem("token");
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim() || !content.trim()) return;
-    onSave({ title, content });
-    onOpenChange(false);
+    try {
+      const noteId = initialNote?._id;
+      if (!noteId) return;
+      const res = await fetch(`/api/notes/${noteId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, content }),
+      });
+      if (!res.ok) throw new Error("Failed to update note");
+      const data = await res.json();
+      onSave(data.note);
+      onOpenChange(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
