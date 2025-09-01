@@ -1,28 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Pencil, Trash2 } from "lucide-react";
 import { CreateNoteDialog } from "@/components/CreateNoteDialog";
 import { EditNoteDialog } from "@/components/EditNoteDialog";
 import { ViewNoteDialog } from "@/components/ViewNoteDialog";
+import { useRouter } from "next/navigation";
 
 interface Note {
   title: string;
   content: string;
 }
 
-export default function DashboardPage() {
-  const [notes, setNotes] = useState<Note[]>([
-    { title: "First Note", content: "This is the first note content" },
-    { title: "Meeting with team", content: "Discussion at 5pm about sprint" },
-    { title: "Groceries", content: "Milk, bread, eggs, veggies" },
-  ]);
+interface User {
+  name: string;
+  email: string;
+}
 
+export default function DashboardPage() {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [user, setUser] = useState<User | null>(null);
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number | null>(
     null
   );
   const [editIndex, setEditIndex] = useState<number | null>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error("Unauthorized");
+        const data = await res.json();
+        setUser(data.user);
+      } catch (err) {
+        console.error("fetchUser error:", err);
+        localStorage.removeItem("token");
+        router.replace("/login");
+      }
+    };
+
+    fetchUser();
+  }, [router]);
 
   const handleDelete = (index: number) => {
     setNotes(notes.filter((_, i) => i !== index));
@@ -38,22 +69,27 @@ export default function DashboardPage() {
     setSelectedNoteIndex(null);
   };
 
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    router.replace("/login");
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Navbar */}
       <header className="border-b bg-white">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px- 0">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px-0">
           <div className="flex items-center gap-2">
             <img src="./icon.svg" />
             <span className="text-lg font-bold">Dashboard</span>
           </div>
           <nav>
-            <a
-              href="/logout"
+            <button
+              onClick={handleSignOut}
               className="text-sm font-medium underline text-blue-600"
             >
               Sign out
-            </a>
+            </button>
           </nav>
         </div>
       </header>
@@ -62,12 +98,16 @@ export default function DashboardPage() {
       <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl space-y-8">
           {/* User Info */}
-          <Card className="p-4">
-            <h2 className="text-2xl font-bold">Welcome, Jonas Kahnwald !</h2>
-            <p>
-              <span className="font-medium">Email:</span> abc@gmail.com
-            </p>
-          </Card>
+          {user && (
+            <Card className="p-4">
+              <h2 className="text-2xl font-bold">
+                Welcome, {user.fullName || "User"}!
+              </h2>
+              <p>
+                <span className="font-medium">Email:</span> {user.email}
+              </p>
+            </Card>
+          )}
 
           {/* Notes Section */}
           <div className="space-y-4">
@@ -85,11 +125,7 @@ export default function DashboardPage() {
                   className="flex flex-row items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition"
                   onClick={() => setSelectedNoteIndex(index)}
                 >
-                  <span
-                    className="font-medium truncate"
-                  >
-                    {note.title}
-                  </span>
+                  <span className="font-medium truncate">{note.title}</span>
 
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <button
@@ -140,9 +176,7 @@ export default function DashboardPage() {
       <EditNoteDialog
         open={editIndex !== null}
         onOpenChange={(open) => !open && setEditIndex(null)}
-        initialNote={
-          editIndex !== null ? notes[editIndex] : null
-        }
+        initialNote={editIndex !== null ? notes[editIndex] : null}
         onSave={handleEditSave}
       />
 

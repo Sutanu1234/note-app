@@ -15,6 +15,7 @@ interface CalendarInputProps {
   label: string;
   required?: boolean;
   className?: string;
+  onChange?: (date: Date) => void;
 }
 
 export function CalendarInput({
