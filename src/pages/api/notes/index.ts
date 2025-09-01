@@ -1,30 +1,68 @@
-// GET: list user's notes
-// POST: create note { title, content }
 import connect from "@/lib/mongodb";
 import { withAuth } from "@/middleware/auth";
 import Note from "@/models/Note";
+import jwt from "jsonwebtoken";
+
+const NOTE_SECRET = process.env.NOTE_SECRET || "supersecret"; // same secret for encoding/decoding
 
 async function handler(req, res) {
   await connect();
   const user = req.user;
+
   if (req.method === "GET") {
     const notes = await Note.find({ owner: user._id })
       .sort({ updatedAt: -1 })
       .lean();
-    return res.status(200).json({ notes });
+
+    // decode title/content before sending to client
+    const decodedNotes = notes.map((n) => ({
+      ...n,
+      title: decodeJWT(n.title),
+      content: decodeJWT(n.content),
+    }));
+
+    return res.status(200).json({ notes: decodedNotes });
   }
+
   if (req.method === "POST") {
     const { title, content } = req.body || {};
     if (!title || typeof title !== "string")
       return res.status(400).json({ error: "Title required" });
+
+    // encode title/content
+    const encodedTitle = encodeJWT(title);
+    const encodedContent = encodeJWT(content || "");
+
     const note = await Note.create({
       owner: user._id,
-      title,
-      content: content || "",
+      title: encodedTitle,
+      content: encodedContent,
     });
-    return res.status(201).json({ note });
+
+    // return decoded note to client
+    return res.status(201).json({
+      note: {
+        ...note.toObject(),
+        title,
+        content: content || "",
+      },
+    });
   }
+
   return res.status(405).end();
+}
+
+// helper to encode/decode
+function encodeJWT(data: string) {
+  return jwt.sign({ data }, NOTE_SECRET);
+}
+
+function decodeJWT(token: string) {
+  try {
+    return jwt.verify(token, NOTE_SECRET).data;
+  } catch {
+    return "[encrypted]";
+  }
 }
 
 export default withAuth(handler);
