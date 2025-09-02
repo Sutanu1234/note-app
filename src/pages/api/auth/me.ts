@@ -15,13 +15,20 @@ export default async function handler(req: any, res: any) {
   try {
     const decoded = verifyToken(token);
 
-    // Ensure decoded is an object with `id`
     if (typeof decoded === "string" || !("id" in decoded)) {
       return res.status(401).json({ error: "Invalid token payload" });
     }
 
     await dbConnect();
-    const user = await User.findById(decoded.id).lean();
+
+    // Make TypeScript understand this is a single object, not array
+    const user = await User.findById(decoded.id).lean<{ 
+      _id: string; 
+      email: string; 
+      fullName?: string; 
+      provider: string; 
+    }>();
+
     if (!user) return res.status(404).json({ error: "User not found" });
 
     return res.status(200).json({
