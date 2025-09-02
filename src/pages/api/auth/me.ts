@@ -24,7 +24,8 @@ export default async function handler(req, res) {
           provider: user.provider,
         },
       });
-  } catch (err) {
+  } catch (err:unknown) {
+    console.error(err);
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 }
