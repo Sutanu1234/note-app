@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await sendOTPEmail(email, code);
 
     return res.status(200).json({ ok: true, message: "OTP sent" });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("request-otp error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }

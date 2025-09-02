@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,8 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
 
+interface Note {
+  _id: string;
+  title: string;
+  content: string;
+}
+
 interface CreateNoteDialogProps {
-  onCreate: (note: { title: string; content: string }) => void;
+  onCreate: (note: Note) => void;
 }
 
 export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
@@ -23,7 +29,11 @@ export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
 
   const handleCreate = async () => {
     if (!title.trim() || !content.trim()) return;
@@ -39,14 +49,18 @@ export function CreateNoteDialog({ onCreate }: CreateNoteDialogProps) {
       });
       if (!res.ok) throw new Error("Failed to create note");
       const data = await res.json();
-      toast.success("Note created successfully!", { style: { background: "#16a34a", color: "#fff" } });
+      toast.success("Note created successfully!", {
+        style: { background: "#16a34a", color: "#fff" },
+      });
       onCreate(data.note); // update state
       setTitle("");
       setContent("");
       setOpen(false);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to create note", { style: { background: "#dc2626", color: "#fff" } });
+      toast.error("Failed to create note", {
+        style: { background: "#dc2626", color: "#fff" },
+      });
     }
   };
 

@@ -3,7 +3,7 @@ import { withAuth } from "@/middleware/auth";
 import Note from "@/models/Note";
 import jwt from "jsonwebtoken";
 
-const NOTE_SECRET = process.env.NOTE_SECRET || "supersecret"; // same secret for encoding/decoding
+const NOTE_SECRET = process.env.NOTE_SECRET as string;
 
 async function handler(req, res) {
   await connect();
@@ -54,12 +54,14 @@ async function handler(req, res) {
 
 // helper to encode/decode
 function encodeJWT(data: string) {
+  if (!NOTE_SECRET) throw new Error("NOTE_SECRET is not defined");
   return jwt.sign({ data }, NOTE_SECRET);
 }
 
 function decodeJWT(token: string) {
   try {
-    return jwt.verify(token, NOTE_SECRET).data;
+    if (!NOTE_SECRET) throw new Error("NOTE_SECRET is not defined");
+    return (jwt.verify(token, NOTE_SECRET) as { data: string }).data;
   } catch {
     return "[encrypted]";
   }

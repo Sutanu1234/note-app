@@ -7,6 +7,7 @@ import { useState } from "react";
 import { CalendarInput } from "./ui/calender-input";
 import toast from "react-hot-toast";
 import { signIn, getSession } from "next-auth/react";
+import Image from "next/image";
 
 export function RegisterForm({
   className,
@@ -31,7 +32,8 @@ export function RegisterForm({
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
       setIsClicked(true);
       toast.success("OTP sent successfully!", { style: { background: "#16a34a", color: "#fff" } });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.error(err);
       toast.error("Error sending OTP", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
@@ -60,7 +62,8 @@ export function RegisterForm({
       localStorage.setItem("token", data.token);
       toast.success("Signup successful!", { style: { background: "#16a34a", color: "#fff" } });
       setTimeout(() => (window.location.href = "/home"), 1000);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.error(err);
       toast.error("Signup failed", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
@@ -72,13 +75,13 @@ export function RegisterForm({
     const res = await signIn("google", { redirect: false });
     if (res?.error) throw new Error(res.error);
 
-    const session = await getSession();
+    const session = (await getSession()) as { customToken?: string };
     if (!session?.customToken) throw new Error("No token returned");
 
     localStorage.setItem("token", session.customToken);
     window.location.href = "/home";
     toast.success("Login successful!", { style: { background: "#16a34a", color: "#fff" } });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     toast.error("Login failed", { style: { background: "#dc2626", color: "#fff" } });
   }
@@ -163,7 +166,7 @@ export function RegisterForm({
           className="w-full h-12"
           onClick={handleGoogleSignIn}
         >
-          <img src="./google.svg" width={28} height={28} alt="Google" /> Sign up
+          <Image src="./google.svg" width={28} height={28} alt="Google" /> Sign up
           with Google
         </Button>
       </div>

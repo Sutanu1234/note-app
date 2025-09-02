@@ -12,7 +12,7 @@ pass: process.env.SMTP_PASS
 });
 
 
-export async function sendOTPEmail(to, code) {
+export async function sendOTPEmail(to : string, code : string) {
 const from = process.env.EMAIL_FROM || 'no-reply@example.com';
 const subject = `Your OTP code`;
 const text = `Your verification code is: ${code}. It will expire shortly.`;

@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
 
 interface Note {
+  _id: string;
   title: string;
   content: string;
 }
@@ -34,6 +35,7 @@ export function EditNoteDialog({
 }: EditNoteDialogProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialNote) {
@@ -42,7 +44,9 @@ export function EditNoteDialog({
     }
   }, [initialNote]);
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
 
   const handleSave = async () => {
     if (!title.trim() || !content.trim()) return;

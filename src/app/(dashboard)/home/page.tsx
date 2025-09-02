@@ -9,15 +9,17 @@ import { ViewNoteDialog } from "@/components/ViewNoteDialog";
 import { useRouter } from "next/navigation";
 
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 interface Note {
+  _id: string;
   title: string;
   content: string;
 }
 
 interface User {
-  name: string;
   email: string;
+  fullName?: string;
 }
 
 export default function DashboardPage() {
@@ -93,7 +95,7 @@ export default function DashboardPage() {
   const handleEditSave = (updatedNote: { title: string; content: string }) => {
     if (editIndex === null) return;
     const updated = [...notes];
-    updated[editIndex] = updatedNote;
+    updated[editIndex] = { ...notes[editIndex], ...updatedNote };
     setNotes(updated);
     setEditIndex(null);
     setSelectedNoteIndex(null);
@@ -111,7 +113,7 @@ export default function DashboardPage() {
       <header className="border-b bg-white">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px-0">
           <div className="flex items-center gap-2">
-            <img src="./icon.svg" />
+            <Image src="./icon.svg" alt="App Icon" />
             <span className="text-lg font-bold">Dashboard</span>
           </div>
           <nav>
@@ -144,7 +146,7 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between">
               <CreateNoteDialog
-                onCreate={(note) => setNotes((prev) => [...prev, note])}
+                onCreate={(note : Note) => setNotes((prev) => [...prev, note])}
               />
               <h2 className="text-xl font-semibold mt-4 md:mt-0">Notes</h2>
             </div>

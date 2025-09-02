@@ -31,7 +31,8 @@ export function LoginForm({
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
       toast.success("OTP sent!", { style: { background: "#16a34a", color: "#fff" } });
       setIsClicked(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.error(err);
       toast.error("Error sending OTP", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
@@ -59,7 +60,8 @@ export function LoginForm({
       localStorage.setItem("token", data.token);
       toast.success("Login successful!", { style: { background: "#16a34a", color: "#fff" } });
       setTimeout(() => (window.location.href = "/home"), 1000);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.error(err);
       toast.error("Login failed", { style: { background: "#dc2626", color: "#fff" } });
     } finally {
       setLoading(false);
@@ -72,14 +74,14 @@ export function LoginForm({
       const res = await signIn("google", { redirect: false });
       if (res?.error) throw new Error(res.error);
 
-      const session = await getSession();
+      const session = (await getSession()) as { customToken?: string };
       if (!session?.customToken) throw new Error("No token returned");
 
       localStorage.setItem("token", session.customToken);
       console.log("Google login successful, token stored.", session.customToken);
       window.location.href = "/home";
       toast.success("Login successful!", { style: { background: "#16a34a", color: "#fff" } });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       toast.error("Login failed", { style: { background: "#dc2626", color: "#fff" } });
     }

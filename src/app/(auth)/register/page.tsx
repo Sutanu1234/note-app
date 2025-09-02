@@ -1,5 +1,5 @@
-
-import { RegisterForm } from "@/components/register-form"
+import { RegisterForm } from "@/components/register-form";
+import Image from "next/image";
 
 export default function RegisterPage() {
   return (
@@ -8,7 +8,7 @@ export default function RegisterPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <img src="/icon.svg" alt="Logo" width={32} height={32} />
+              <Image src="/icon.svg" alt="Logo" width={32} height={32} />
             </div>
             HD
           </a>
@@ -20,12 +20,14 @@ export default function RegisterPage() {
         </div>
       </div>
       <div className="relative hidden lg:block">
-        <img
+        <Image
           src="/placeholder.jpg"
           alt="Image"
+          fill
           className="absolute inset-0 h-full w-full object-cover rounded-2xl p-2 dark:brightness-[0.2] dark:grayscale"
+          style={{ objectFit: "cover" }}
         />
       </div>
     </div>
-  )
+  );
 }
