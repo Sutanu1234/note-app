@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { signIn, getSession } from "next-auth/react";
+import Image from "next/image";
 
 export function LoginForm({
   className,
@@ -178,7 +179,7 @@ export function LoginForm({
           className="w-full h-12 flex items-center justify-center gap-2"
           onClick={handleGoogleSignIn}
         >
-          <img src="./google.svg" width={28} height={28} alt="Google" />
+          <Image src="./google.svg" width={28} height={28} alt="Google" />
           Signin with Google
         </Button>
       </div>
