@@ -2,7 +2,8 @@ import dbConnect from "@/lib/mongodb";
 import OTP from "@/models/OTP";
 import { sendOTPEmail } from "@/utils/mailer";
 
-export default async function handler(req, res) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export default async function handler(req:any, res:any) {
   if (req.method !== "POST") return res.status(405).end();
   const { email, purpose = "login" } = req.body || {};
   if (!email) return res.status(400).json({ error: "Email required" });

@@ -1,11 +1,11 @@
-// POST { email, code, purpose: 'login'|'signup', fullName?, dob?, rememberMe? }
-
 import dbConnect from "@/lib/mongodb";
 import OTP from "@/models/OTP";
 import User from "@/models/User";
 import { signToken } from "@/utils/jwt";
 
-export default async function handler(req, res) {
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export default async function handler(req:any, res:any) {
   if (req.method !== "POST") return res.status(405).end();
   const {
     email,
