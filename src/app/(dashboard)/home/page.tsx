@@ -113,7 +113,7 @@ export default function DashboardPage() {
       <header className="border-b bg-white">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px-0">
           <div className="flex items-center gap-2">
-            <Image src="./icon.svg" alt="App Icon" />
+            <Image src="/icon.svg" alt="Logo" width={32} height={32} />
             <span className="text-lg font-bold">Dashboard</span>
           </div>
           <nav>

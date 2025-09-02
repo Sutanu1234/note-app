@@ -6,6 +6,7 @@ if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 let cached = (global as any).mongoose;
 
 if (!cached) {

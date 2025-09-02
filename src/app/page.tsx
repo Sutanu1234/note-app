@@ -28,7 +28,8 @@ export default function Home() {
           localStorage.removeItem("token");
           router.replace("/login");
         }
-      } catch (err) {
+      } catch (err:unknown) {
+        console.error(err);
         localStorage.removeItem("token");
         router.replace("/login");
       } finally {

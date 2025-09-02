@@ -1,10 +1,17 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import dbConnect from "@/lib/mongodb";
+import type { JWT } from "next-auth/jwt"; // ✅ correct import
 
-export const authOptions = {
+// Extend JWT with a customToken
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface MyToken extends JWT {
+  customToken?: string;
+}
+
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -14,10 +21,9 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: MyToken; user?: NextAuthUser }): Promise<MyToken> {
       if (user) {
         await dbConnect();
-        // Check if user exists in DB
         let existingUser = await User.findOne({ email: user.email });
         if (!existingUser) {
           existingUser = await User.create({
@@ -26,7 +32,7 @@ export const authOptions = {
             provider: "google",
           });
         }
-        // Generate a custom JWT to use in /me
+
         token.customToken = jwt.sign(
           { id: existingUser._id, email: existingUser.email },
           process.env.NEXTAUTH_SECRET!,
@@ -35,7 +41,7 @@ export const authOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: MyToken }) {
       session.customToken = token.customToken;
       return session;
     },
