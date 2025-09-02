@@ -3,7 +3,8 @@ import connect from "@/lib/mongodb";
 import { withAuth } from "@/middleware/auth";
 import Note from "@/models/Note";
 
-async function handler(req, res) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+async function handler(req:any, res:any) {
   await connect();
   const user = req.user;
   const { id } = req.query;

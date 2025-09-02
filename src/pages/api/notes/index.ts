@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken";
 
 const NOTE_SECRET = process.env.NOTE_SECRET as string;
 
-async function handler(req, res) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+async function handler(req:any, res:any) {
   await connect();
   const user = req.user;
 

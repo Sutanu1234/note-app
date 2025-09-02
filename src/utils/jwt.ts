@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions, Secret } from "jsonwebtoken";
 
-const JWT_SECRET: string = process.env.JWT_SECRET as string;
+const JWT_SECRET: Secret = process.env.JWT_SECRET!;
 const SHORT = process.env.JWT_EXPIRES_IN_SHORT || "7d";
 const LONG = process.env.JWT_EXPIRES_IN_LONG || "30d";
 
@@ -10,15 +10,17 @@ export interface SignTokenPayload {
   [key: string]: unknown;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function signToken(payload: SignTokenPayload, remember: boolean = false): string {
-  const expiresIn: string = remember ? LONG : SHORT;
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+  const expiresIn = (remember ? LONG : SHORT) as any; // <-- cast to any
+  const options: SignOptions = { expiresIn };
+  return jwt.sign(payload, JWT_SECRET, options);
 }
 
 export interface JwtPayload {
   [key: string]: unknown;
 }
 
-export function verifyToken(token: string): JwtPayload | string {
-  return jwt.verify(token, JWT_SECRET as string);
+export function verifyToken(token: string): JwtPayload {
+  return jwt.verify(token, JWT_SECRET) as JwtPayload;
 }
