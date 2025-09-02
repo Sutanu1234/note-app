@@ -57,7 +57,7 @@ export default async function handler(req, res) {
   }
 
   // purpose === 'login'
-  let user = await User.findOne({ email });
+  const user = await User.findOne({ email });
   if (!user) {
     // user not found — maybe they should sign up
     return res
