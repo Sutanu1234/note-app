@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("Retrieved token from localStorage:", token);
+    // console.log("Retrieved token from localStorage:", token);
     if (!token) {
       router.replace("/login");
       return;

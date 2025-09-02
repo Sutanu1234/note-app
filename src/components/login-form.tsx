@@ -79,7 +79,7 @@ export function LoginForm({
       if (!session?.customToken) throw new Error("No token returned");
 
       localStorage.setItem("token", session.customToken);
-      console.log("Google login successful, token stored.", session.customToken);
+      // console.log("Google login successful, token stored.", session.customToken);
       window.location.href = "/home";
       toast.success("Login successful!", { style: { background: "#16a34a", color: "#fff" } });
     } catch (err: unknown) {

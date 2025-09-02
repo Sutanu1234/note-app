@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log("Generated OTP code:", code);
+    // console.log("Generated OTP code:", code);
     const expiryMinutes = Number(process.env.OTP_EXPIRY_MINUTES || 10);
     const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
 
